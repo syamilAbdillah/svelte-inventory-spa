@@ -1,0 +1,1 @@
+<h3 class="text-4xl">stock dec.</h3>
