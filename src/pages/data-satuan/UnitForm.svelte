@@ -1,11 +1,11 @@
 <script>
-	import FormControl from '../form/FormControl.svelte'
-	import Input from '../form/Input.svelte'
-	import SaveButton from '../form/SaveButton.svelte'
-	import UpdateButton from '../form/UpdateButton.svelte'
-	import CancelButton from '../form/CancelButton.svelte'
-	import Card from '../card/Card.svelte'
-	import { unit, state, handleCreate, handleUpdate, handleCancle } from '../../stores/unit.js'
+	import FormControl from '../../components/form/FormControl.svelte'
+	import Input from '../../components/form/Input.svelte'
+	import SaveButton from '../../components/form/SaveButton.svelte'
+	import UpdateButton from '../../components/form/UpdateButton.svelte'
+	import CancelButton from '../../components/form/CancelButton.svelte'
+	import Card from '../../components/card/Card.svelte'
+	import { unit, state, handleCreate, handleUpdate, handleCancle } from './unitStore'
 	
 </script>
 

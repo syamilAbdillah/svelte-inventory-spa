@@ -1,8 +1,8 @@
 <script>
-	import Table from '../table/Table.svelte'
-	import Thead from '../table/Thead.svelte'
-	import Tbody from '../table/Tbody.svelte'
-	import { units, handleDelete, handleEdit } from '../../stores/unit.js'
+	import Table from '../../components/table/Table.svelte'
+	import Thead from '../../components/table/Thead.svelte'
+	import Tbody from '../../components/table/Tbody.svelte'
+	import { units, handleDelete, handleEdit } from './unitStore'
 
 	const bodyFields = ['name']
 	const headFields = ['satuan']

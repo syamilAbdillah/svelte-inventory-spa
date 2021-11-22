@@ -1,5 +1,5 @@
 <script>
 	import { replace } from 'svelte-spa-router'
 
-	replace('/dashboard')
+	localStorage.getItem('auth-credential') ? replace('/dashboard'): replace('/login')
 </script>
