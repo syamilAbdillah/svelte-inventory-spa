@@ -28,7 +28,7 @@
 	unitService.onTransition(state => {
 		if(state.value == 'edit'){
 			updateInitialValues({
-				name: state.context.selectedUnit.name
+				name: state.context.unit.name
 			})
 		} else {
 			updateInitialValues({
@@ -36,6 +36,11 @@
 			})
 		}
 	})
+
+	const handleCancel = () => {
+		handleReset()
+		unitService.send('CANCEL')
+	}
 </script>
 
 <Card>
@@ -52,10 +57,7 @@
 		{#if $unitService.matches('edit') || $unitService.matches('update')}
 			<CancelButton
 				disabled={$unitService.matches('update')}
-				on:click={() => {
-					handleReset()
-					unitService.send('CANCEL')
-				}}
+				on:click={handleCancel}
 			/>
 			<UpdateButton
 				disabled={$unitService.matches('update')}

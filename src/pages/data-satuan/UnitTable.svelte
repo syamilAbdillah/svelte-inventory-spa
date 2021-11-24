@@ -11,14 +11,23 @@
 
 	onMount(() => unitService.send('FETCHING'))
 
-	const bodyFields = ['name']
-	const headFields = ['satuan']
+	const handleEdit = (unit) => unitService.send({ 
+		type: 'EDIT', 
+		payload: {...unit}
+	})
+
+	const handleDelete = (unit) => confirm('are you sure ?') && unitService.send({
+		type: 'DELETE',
+		payload: { id: unit.id }
+	})
+
+	const fields = ['satuan']
 </script>
 
 <Table>
 	<Thead 
 		slot="thead"
-		fields={headFields}
+		fields={fields}
 	></Thead>
 	<tbody slot="tbody">
 		{#if $unitService.matches('load')}
@@ -30,23 +39,11 @@
 				<td>{ unit.name }</td>
 				<td>
 					<EditButton 
-						on:click={
-							() => unitService.send({ 
-								type: 'EDIT', 
-								payload: {...unit}
-							})
-						}
-
+						on:click={() => handleEdit(unit)}
 						disabled={!$unitService.matches('idle')}
 					/>
 					<DeleteButton 
-						on:click={
-							() => unitService.send({
-								type: 'DELETE',
-								payload: { id: unit.id }
-							})
-						}
-
+						on:click={() => handleDelete(unit)}
 						disabled={!$unitService.matches('idle')}
 					/>
 				</td>

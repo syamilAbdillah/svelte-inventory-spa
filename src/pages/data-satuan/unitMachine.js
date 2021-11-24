@@ -22,6 +22,64 @@ async function getUnits() {
 		console.log(error)
 		return {error}
 	}
+}
+
+async function createUnit(unit){
+	try {
+		const resp = await fetch('http://localhost:5000/unit', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(unit)
+		})
+
+		if (resp.status !== 201) throw new Error(resp.status)
+
+		const json = await resp.json()
+
+		return json	
+	} catch(error) {
+		console.log(error)
+		return error
+	}
+}
+
+async function deleteUnit(id){
+	try {
+		const resp = await fetch(`http://localhost:5000/unit/${id}`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+
+		if (resp.status != 200) throw new Error(resp.status)	
+
+		return await resp.json()
+	} catch(error) {
+		console.log(error)
+		return error
+	}
+}
+
+async function updateUnit(unit){
+	try {
+		const resp = await fetch(`http://localhost:5000/unit/${unit.id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(unit)
+		})
+
+		if(resp.status != 200) throw new Error(resp.status)
+
+		return await resp.json()
+	} catch(error) {
+		console.log(error)
+		return error
+	}
 } 
 
 export const unitMachine = createMachine({
@@ -30,7 +88,7 @@ export const unitMachine = createMachine({
 	context: {
 		etag: undefined,
 		units: [],
-		selectedUnit: {}
+		unit: {}
 	},
 	states: {
 		idle: {
@@ -42,22 +100,18 @@ export const unitMachine = createMachine({
 					actions: 'editUnit'
 				},
 				CREATE: {
-					target: 'create',
+					target: 'create'
 				}
 			}
 		},
 		load: {
+			entry: 'resetUnitForm',
 			invoke: {
 				id: 'get-units',
 				src: (ctx, e) => getUnits,
 				onDone: {
 					target: 'idle',
-					actions: assign({
-						units: (ctx, e) => {
-							return e.data.units.data
-						},
-						etag: (ctx, e) => e.data.etag
-					})
+					actions: 'successGetUnits'
 				},
 				onError: {
 					target: 'load'
@@ -78,7 +132,7 @@ export const unitMachine = createMachine({
 		update: {
 			invoke: {
 				id: 'update-unit',
-				src: () => mockFetching,
+				src: (ctx, e) => updateUnit({...ctx.unit, ...e.payload}),
 				onDone: {
 					target:'load',
 					actions: 'resetUnitForm'
@@ -89,7 +143,7 @@ export const unitMachine = createMachine({
 		delete: {
 			invoke: {
 				id: 'delete-unit',
-				src: () => mockFetching,
+				src: (_, e) => deleteUnit(e.payload.id),
 				onDone: 'load',
 				onError: 'idle'
 			}
@@ -97,7 +151,7 @@ export const unitMachine = createMachine({
 		create: {
 			invoke: {
 				id: 'create-new-unit',
-				src: () => mockFetching,
+				src: (ctx, e) => createUnit(e.payload),
 				onDone: 'load',
 				onError: 'create'
 			}
@@ -107,10 +161,16 @@ export const unitMachine = createMachine({
 {
 	actions: {
 		editUnit: assign({
-			selectedUnit: (ctx, e) => ({...e.payload})
+			unit: (ctx, e) => ({...e.payload})
 		}),
 		resetUnitForm: assign({
-			selectedUnit: (ctx, _) => ({})
+			unit: (ctx, _) => ({})
+		}),
+		successGetUnits: assign({
+			units: (ctx, e) => {
+				return e.data.units.data
+			},
+			etag: (ctx, e) => e.data.etag
 		})
 	},
 	guards: {}
