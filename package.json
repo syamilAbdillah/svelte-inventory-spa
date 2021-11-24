@@ -26,7 +26,7 @@
     "svelte-awesome": "^2.4.2",
     "svelte-forms-lib": "^2.0.0",
     "svelte-spa-router": "^3.2.0",
-    "validator": "^13.7.0",
-    "xstate": "^4.26.1"
+    "xstate": "^4.26.1",
+    "yup": "^0.32.11"
   }
 }

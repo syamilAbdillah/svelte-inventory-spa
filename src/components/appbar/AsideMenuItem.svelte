@@ -9,7 +9,7 @@
 </script>
 
 <li class="hover:text-white mb-2 active">
-	<a href="{to}" use:link use:active>
+	<a href="{to}" use:link use:active on:click>
 		<Icon data={icon} class="mr-4" /> 
 		{text}
 	</a>

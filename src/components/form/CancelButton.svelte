@@ -5,7 +5,7 @@
 	export let disabled = false
 </script>
 
-<button class="btn btn-ghost my-4" on:click  {disabled}>
+<button type="reset" class="btn btn-ghost my-4" on:click  {disabled}>
 	<Icon data={faWindowClose} class="mr-4"></Icon>
 	<slot>cancel</slot>
 </button>

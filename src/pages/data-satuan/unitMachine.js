@@ -1,7 +1,5 @@
 import { createMachine, assign, interpret } from 'xstate';
 import {writable, get} from 'svelte/store' 
-import isEmpty from 'validator/es/lib/isEmpty'
-import trim from 'validator/es/lib/trim'
 
 export const unit = writable({})
 
@@ -15,7 +13,7 @@ async function getUnits() {
 	try {
 		const resp = await fetch('http://localhost:5000/unit/')
 		if(resp.status != 200) throw new Error(resp.status)
-			
+
 		const units = await resp.json()
 		const etag = resp.headers.get('etag')
 
@@ -108,12 +106,12 @@ export const unitMachine = createMachine({
 }, 
 {
 	actions: {
-		editUnit: (ctx, e) => {
-			unit.set({...e.payload})
-		},
-		resetUnitForm: () => {
-			unit.set({})
-		}
+		editUnit: assign({
+			selectedUnit: (ctx, e) => ({...e.payload})
+		}),
+		resetUnitForm: assign({
+			selectedUnit: (ctx, _) => ({})
+		})
 	},
 	guards: {}
 })

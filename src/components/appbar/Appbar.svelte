@@ -7,11 +7,12 @@
 	import NavDropdown from './NavDropdown.svelte'
 
 	const TOGGLE_ID = 'appbar-toggle'
+	let toggle = false
 </script>
 
 
 <div class="drawer drawer-mobile min-h-screen">
-	<input type="checkbox" class="drawer-toggle" id="{TOGGLE_ID}">
+	<input type="checkbox" bind:checked={toggle} class="drawer-toggle" id="{TOGGLE_ID}">
 
 	<div class="drawer-content">
 		<Navbar>
@@ -23,6 +24,6 @@
 	</div>
 	
 	<Sidebar toggleId={TOGGLE_ID}>
-		<AsideMenu slot="aside-menu"></AsideMenu>
+		<AsideMenu on:close={() => toggle = false} slot="aside-menu"></AsideMenu>
 	</Sidebar>
 </div>

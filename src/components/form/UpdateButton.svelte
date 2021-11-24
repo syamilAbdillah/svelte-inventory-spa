@@ -6,7 +6,7 @@
 	export let disabled = false
 </script>
 
-<button class="btn btn-primary" on:click {disabled}>
+<button class="btn btn-primary" type="submit" on:click {disabled}>
 	<Icon data={faPenNib} class="mr-4"></Icon>
 	<slot>update</slot>
 </button>

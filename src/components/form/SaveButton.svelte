@@ -5,7 +5,7 @@
 	export let disabled = false
 </script>
 
-<button class="btn btn-primary" on:click {disabled}>
+<button class="btn btn-primary" type="submit" on:click {disabled}>
 	<Icon data={faSave} class="mr-4"></Icon>
 	<slot>save</slot>
 </button>
