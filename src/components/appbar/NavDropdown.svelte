@@ -1,5 +1,6 @@
 <script>
 	import Icon from 'svelte-awesome'
+	import { link } from 'svelte-spa-router'
 	import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 </script>
 
@@ -14,13 +15,13 @@
 	</a>
 	<ul class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-40 compact">
 		<li>
-			<a href="">
+			<a href="/" use:link>
 				<Icon data={faUser} class="mr-4"></Icon>
 				profile
 			</a>
 		</li>
 		<li>
-			<a href="/login">
+			<a href="/login" use:link>
 				<Icon data={faSignOutAlt} class="mr-4"></Icon>
 				logout
 			</a>
