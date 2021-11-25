@@ -1,25 +1,70 @@
 <script>
-	import Card from '../card/Card.svelte'
-	import Input from '../form/Input.svelte'
-	import SaveButton from '../form/SaveButton.svelte'
-	import UpdateButton from '../form/UpdateButton.svelte'
-	import CancelButton from '../form/CancelButton.svelte'
-	import { category, handleCreate, handleCancle, handleUpdate, state } from '../../stores/category.js'
+	import { createForm } from 'svelte-forms-lib'
+	import * as yup from 'yup'
+	import Input from '../../components/form/Input.svelte'
+	import SaveButton from '../../components/form/SaveButton.svelte'
+	import UpdateButton from '../../components/form/UpdateButton.svelte'
+	import CancelButton from '../../components/form/CancelButton.svelte'
+	import Card from '../../components/card/Card.svelte'
+	import categoryService from './categoryMachine'
+
+
+	const { form, errors, handleSubmit, handleChange, handleReset, updateInitialValues } = createForm({
+		initialValues: {
+			name: ''
+		},
+		validationSchema: yup.object().shape({
+			name: yup.string().required()
+		}),
+		onSubmit: (values) => {
+			$categoryService.matches('idle') && categoryService.send({ type: 'CREATE', payload: values })
+			$categoryService.matches('edit') && categoryService.send({ type: 'SAVE_CHANGES', payload: values })
+			handleReset()
+		}
+	})
+
+	categoryService.onTransition(state => {
+		if(state.value == 'edit'){
+			updateInitialValues({
+				name: state.context.category.name
+			})
+		} else {
+			updateInitialValues({
+				name: ''
+			})
+		}
+	})
+
+	const handleCancel = () => {
+		handleReset()
+		categoryService.send('CANCEL')
+	}
 </script>
 
 
 <Card>
-	<Input 
-		bind:value={$category.name} 
-		label="satuan"
-		placeholder="eg. skincare"
-		required="true"
-	></Input>
+	<form on:submit|preventDefault={handleSubmit}>		
+		<Input 
+			bind:value={$form.name}
+			on:change={handleChange} 
+			label="kategori barang" 
+			placeholder="eg. pupuk kandang"
+			name="name"
+			error={$errors.name}
+		></Input>
 
-	{#if $state.isEdit}
-	<CancelButton on:click={handleCancle}></CancelButton>
-	<UpdateButton on:click={() => handleUpdate($category.id)}></UpdateButton>
-	{:else}
-	<SaveButton on:click={handleCreate}></SaveButton>
-	{/if}
+		{#if $categoryService.matches('edit') || $categoryService.matches('update')}
+			<CancelButton
+				disabled={$categoryService.matches('update')}
+				on:click={handleCancel}
+			/>
+			<UpdateButton
+				disabled={$categoryService.matches('update')}
+			/>
+		{:else}
+			<SaveButton
+				disabled={$categoryService.matches('create')}
+			/>	
+		{/if}
+	</form>
 </Card>
