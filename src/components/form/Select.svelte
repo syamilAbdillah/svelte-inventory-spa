@@ -1,15 +1,14 @@
 <script>
 	import FormControl from './FormControl.svelte'
 
-	export let options = [{ id: 1, text: 'not found :)' }]
-	export let value = options[0].id
-	export let label = 'select'
+	export let label = 'select field'
+	export let value
+	export let error
+	export let name
 </script>
 
-<FormControl label="{label}">
-	<select bind:value class="select select-bordered">
-		{#each options as option, index}
-			<option value="{option.id}">{option.text}</option>
-		{/each}
+<FormControl {label} {error}>
+	<select {name} on:change bind:value class="select select-bordered">
+		<slot></slot>
 	</select>
 </FormControl>
