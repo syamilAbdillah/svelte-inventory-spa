@@ -2,27 +2,47 @@
 	import Icon from 'svelte-awesome'
 	import { replace } from 'svelte-spa-router'
 	import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
+	import { createForm } from 'svelte-forms-lib'
+	import * as yup from 'yup'
 	import Card from '../../components/card/Card.svelte'
 	import Input from '../../components/form/Input.svelte'
+	import setCookie from '../../utils/setCookie.js'
 
-	let email
-	let password
+	let isLoading = false
 
-	const login = () => fetch('http://localhost:5000/user/login', {
-		body: JSON.stringify({email, password}),
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' }
-	}).then(resp => {
-		console.log(resp)
-		return resp.json()
+	const { form, errors, handleSubmit, handleChange } = createForm({
+		initialValues: {
+			email: '',
+			password: ''
+		},
+		validationSchema: yup.object().shape({
+			email: yup.string().email().required(),
+			password: yup.string().required()
+		}),
+		onSubmit: (values) => {
+			isLoading = true
+			fetch('http://localhost:5000/user/login', {
+				body: JSON.stringify(values),
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			})
+			.then(resp => {
+				if(resp.status != 200) throw new Error(resp.status)
+				return resp.json()
+			})
+			.then(json => {
+				const accessToken = json.data.accessToken
+				setCookie('access-token', accessToken)
+				replace('/dashboard')
+				return json
+			})
+			.catch(error => {
+				console.log(error)
+			})
+			.finally(() => isLoading = false)
+		}
 	})
-	.then(json => {
-		localStorage.setItem('auth-credential', JSON.stringify(json))
-		replace('/dashboard')
-		return json
-	}).catch(error => {
-		console.log(error)
-	})
+
 </script>
 
 <svelte:head>
@@ -31,11 +51,27 @@
 
 <main class="h-screen w-screen flex justify-center items-center bg-base-200">
 	<Card title="Login">
-		<Input label="email" bind:value={email} type="email" placeholder="eg. johndoe@email.com"></Input>
-		<Input label="password" bind:value={password} type="password" placeholder="eg. p4$$WORD"></Input>
-		<button class="btn btn-primary" on:click={login}>
-			<Icon data={faSignInAlt} class="mr-4"></Icon>
-			login
-		</button>
+		<form on:submit={handleSubmit}>
+			<Input 
+				bind:value={$form.email} 
+				type="email" 
+				placeholder="eg. johndoe@email.com"
+				label="email"
+				name="email"
+				error={$errors.email} 
+			/>
+			<Input 
+				bind:value={$form.password} 
+				type="password" 
+				placeholder="********"
+				label="password"
+				name="password"
+				error={$errors.password} 
+			/>
+			<button class="btn btn-primary {isLoading ? 'loading': ''}" disabled={isLoading}>
+				<Icon data={faSignInAlt} class="mr-4"/>
+				login
+			</button>
+		</form>
 	</Card>
 </main>

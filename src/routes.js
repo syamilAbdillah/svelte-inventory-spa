@@ -1,5 +1,10 @@
 import { wrap } from 'svelte-spa-router/wrap'
-import { isAuthenticated } from './stores/auth'
+import getCookie from './utils/getCookie'
+
+const simpleAuthGuard = () => {
+   const accessToken = getCookie('access-token')
+   return typeof(accessToken) == 'string' && accessToken.length > 1
+}
 
 const routes = {
     '/login': wrap({
@@ -7,15 +12,11 @@ const routes = {
     }),
     '/': wrap({
         asyncComponent: () => import('./pages/Home.svelte'),
-        // conditions: [
-        //   () => $isAuthenticated
-        // ]
+        conditions: [simpleAuthGuard]
     }),
     '/*': wrap({
         asyncComponent: () => import('./pages/Home.svelte'),
-        // conditions: [
-        //   () => $isAuthenticated
-        // ]
+        conditions: [simpleAuthGuard]
     })
 }
 
