@@ -1,14 +1,5 @@
 import { createMachine, assign, interpret } from 'xstate'
-import {writable, get} from 'svelte/store' 
 import request from '../../utils/request'
-
-export const unit = writable({})
-
-const mockFetching = () => 
-	new Promise((resolve, reject) => 
-		setTimeout(() => resolve({ data: 'yay' }), 1000)
-	)
-
 
 async function getUnits() {
 	try {
@@ -17,26 +8,15 @@ async function getUnits() {
 		const units = resp?.data.data
 		return {units, etag}	
 	} catch(error) {
-		// console.log(error)
 		return {error}
 	}
 }
 
 async function createUnit(unit){
 	try {
-		const resp = await fetch('http://localhost:5000/unit', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(unit)
-		})
+		const resp = await request.post('/unit', unit)
 
-		if (resp.status !== 201) throw new Error(resp.status)
-
-		const json = await resp.json()
-
-		return json	
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -45,16 +25,9 @@ async function createUnit(unit){
 
 async function deleteUnit(id){
 	try {
-		const resp = await fetch(`http://localhost:5000/unit/${id}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
+		const resp = await request.delete(`/unit/${id}`)
 
-		if (resp.status != 200) throw new Error(resp.status)	
-
-		return await resp.json()
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -63,17 +36,9 @@ async function deleteUnit(id){
 
 async function updateUnit(unit){
 	try {
-		const resp = await fetch(`http://localhost:5000/unit/${unit.id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(unit)
-		})
+		const resp = await request.put(`/unit/${unit.id}`, unit)
 
-		if(resp.status != 200) throw new Error(resp.status)
-
-		return await resp.json()
+		return await resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -171,8 +136,7 @@ export const unitMachine = createMachine({
 			},
 			etag: (ctx, e) => e.data.etag
 		})
-	},
-	guards: {}
+	}
 })
 
 const unitService = interpret(unitMachine)

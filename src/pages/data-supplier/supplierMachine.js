@@ -1,12 +1,11 @@
 import { createMachine, assign, interpret } from 'xstate'
+import request from '../../utils/request'
 
 async function getSuppliers() {
 	try {
-		const resp = await fetch('http://localhost:5000/supplier/')
-		if(resp.status != 200) throw new Error(resp.status)
-
-		const suppliers = await resp.json()
-		const etag = resp.headers.get('etag')
+		const resp = await request.get('/supplier')
+		const suppliers = resp.data
+		const etag = resp.headers.etag
 
 		return {suppliers, etag}	
 	} catch(error) {
@@ -17,19 +16,8 @@ async function getSuppliers() {
 
 async function createSupplier(supplier){
 	try {
-		const resp = await fetch('http://localhost:5000/supplier', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(supplier)
-		})
-
-		if (resp.status !== 201) throw new Error(resp.status)
-
-		const json = await resp.json()
-
-		return json	
+		const resp = await request.post('/supplier', supplier)
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -38,16 +26,8 @@ async function createSupplier(supplier){
 
 async function deleteSupplier(id){
 	try {
-		const resp = await fetch(`http://localhost:5000/supplier/${id}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-
-		if (resp.status != 200) throw new Error(resp.status)	
-
-		return await resp.json()
+		const resp = await request.delete(`/supplier/${id}`)
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -56,17 +36,8 @@ async function deleteSupplier(id){
 
 async function updateSupplier(supplier){
 	try {
-		const resp = await fetch(`http://localhost:5000/supplier/${supplier.id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(supplier)
-		})
-
-		if(resp.status != 200) throw new Error(resp.status)
-
-		return await resp.json()
+		const resp = await request.put(`/supplier/${supplier.id}`,supplier)
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error

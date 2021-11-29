@@ -1,12 +1,11 @@
 import { createMachine, assign, interpret } from 'xstate'
+import request from '../../utils/request'
 
 async function getProducts(){
 	try {
-		const resp = await fetch('http://localhost:5000/product/')
-		if(resp.status != 200) throw new Error(resp.status)
-
-		const products = await resp.json()
-		const etag = resp.headers.get('etag')
+		const resp = await request.get('/product/')
+		const products = resp.data
+		const etag = resp.headers.etag
 
 		return {products, etag}	
 	} catch(error) {
@@ -17,19 +16,8 @@ async function getProducts(){
 
 async function createProduct(product){
 	try {
-		const resp = await fetch('http://localhost:5000/product', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(product)
-		})
-
-		if (resp.status !== 201) throw new Error(resp.status)
-
-		const json = await resp.json()
-
-		return json	
+		const resp = await request.post('/product', product)
+		return resp.data	
 	} catch(error) {
 		console.log(error)
 		return error
@@ -38,16 +26,8 @@ async function createProduct(product){
 
 async function deleteProduct(id){
 	try {
-		const resp = await fetch(`http://localhost:5000/product/${id}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-
-		if (resp.status != 200) throw new Error(resp.status)	
-
-		return await resp.json()
+		const resp = await request.delete(`/product/${id}`)
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -56,17 +36,8 @@ async function deleteProduct(id){
 
 async function updateProduct(product){
 	try {
-		const resp = await fetch(`http://localhost:5000/product/${product.id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(product)
-		})
-
-		if(resp.status != 200) throw new Error(resp.status)
-
-		return await resp.json()
+		const resp = await request.put(`/product/${product.id}`, product)
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -101,12 +72,17 @@ export const productMachine = createMachine({
 				id: 'get-products',
 				src: (ctx, e) => getProducts,
 				onDone: {
-					target: 'idle',
+					target: 'loadOptions',
 					actions: 'successGetProducts'
 				},
 				onError: {
 					target: 'load'
 				}
+			}
+		},
+		loadOptions: {
+			after: {
+				1000: 'idle'
 			}
 		},
 		edit: {
@@ -164,7 +140,10 @@ export const productMachine = createMachine({
 			etag: (ctx, e) => e.data.etag
 		})
 	},
-	guards: {}
+	guards: {
+		isProductsLoaded: (ctx, e) => ctx.etag != undefined,
+		isProductsUnloaded: (ctx, _) => ctx.etag == undefined
+	}
 })
 
 const produtService = interpret(productMachine)

@@ -47,7 +47,7 @@
 			updateInitialValues({...initialValues})
 		}
 
-		if(state.value == 'load'){
+		if(state.value == 'loadOptions'){
 			categoryService.send('FETCHING')
 			supplierService.send('FETCHING')
 			unitService.send('FETCHING')

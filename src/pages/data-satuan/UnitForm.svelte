@@ -8,7 +8,7 @@
 	import UpdateButton from '../../components/form/UpdateButton.svelte'
 	import CancelButton from '../../components/form/CancelButton.svelte'
 	import Card from '../../components/card/Card.svelte'
-	import unitService, { unit } from './unitMachine'
+	import unitService from './unitMachine'
 
 
 	const { form, errors, handleSubmit, handleChange, handleReset, isValid, touched, updateInitialValues } = createForm({

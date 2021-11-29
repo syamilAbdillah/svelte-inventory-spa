@@ -1,13 +1,11 @@
 import { createMachine, assign, interpret } from 'xstate'
-
+import request from '../../utils/request'
 
 async function getCategories() {
 	try {
-		const resp = await fetch('http://localhost:5000/category')
-		if(resp.status != 200) throw new Error(resp.status)
-
-		const categories = await resp.json()
-		const etag = resp.headers.get('etag')
+		const resp = await request.get('/category')
+		const categories = resp.data
+		const etag = resp.headers.etag
 
 		return {categories, etag}	
 	} catch(error) {
@@ -18,19 +16,8 @@ async function getCategories() {
 
 async function createCategory(category){
 	try {
-		const resp = await fetch('http://localhost:5000/category', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(category)
-		})
-
-		if (resp.status !== 201) throw new Error(resp.status)
-
-		const json = await resp.json()
-
-		return json	
+		const resp = await request.post('/category', category)
+		return resp.data	
 	} catch(error) {
 		console.log(error)
 		return error
@@ -39,16 +26,8 @@ async function createCategory(category){
 
 async function deleteCategry(id){
 	try {
-		const resp = await fetch(`http://localhost:5000/category/${id}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-
-		if (resp.status != 200) throw new Error(resp.status)	
-
-		return await resp.json()
+		const resp = await request.delete(`/category/${id}`)
+		return resp.data
 	} catch(error) {
 		console.log(error)
 		return error
@@ -57,13 +36,7 @@ async function deleteCategry(id){
 
 async function updateCategry(category){
 	try {
-		const resp = await fetch(`http://localhost:5000/category/${category.id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(category)
-		})
+		const resp = await request.put(`/category/${category.id}`,category)
 
 		if(resp.status != 200) throw new Error(resp.status)
 
