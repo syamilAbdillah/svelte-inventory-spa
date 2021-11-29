@@ -23,6 +23,8 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@xstate/svelte": "^0.2.0",
+    "axios": "^0.24.0",
+    "jwt-decode": "^3.1.2",
     "svelte-awesome": "^2.4.2",
     "svelte-forms-lib": "^2.0.0",
     "svelte-spa-router": "^3.2.0",

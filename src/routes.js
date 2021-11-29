@@ -1,14 +1,16 @@
 import { wrap } from 'svelte-spa-router/wrap'
 import getCookie from './utils/getCookie'
+import LoadingFallback from './pages/LoadingFallback.svelte'
 
 const simpleAuthGuard = () => {
-   const accessToken = getCookie('access-token')
-   return typeof(accessToken) == 'string' && accessToken.length > 1
+   const refreshToken = getCookie('refresh-token')
+   return typeof(refreshToken) == 'string' && refreshToken.length > 1
 }
 
 const routes = {
     '/login': wrap({
-        asyncComponent: () => import('./pages/login/Login.svelte')
+        asyncComponent: () => import('./pages/login/Login.svelte'),
+        loadingComponent: LoadingFallback
     }),
     '/': wrap({
         asyncComponent: () => import('./pages/Home.svelte'),

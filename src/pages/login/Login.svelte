@@ -4,9 +4,12 @@
 	import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 	import { createForm } from 'svelte-forms-lib'
 	import * as yup from 'yup'
+	import jwt_decode from 'jwt-decode'
+	import axios from 'axios'
 	import Card from '../../components/card/Card.svelte'
 	import Input from '../../components/form/Input.svelte'
-	import setCookie from '../../utils/setCookie.js'
+	import setCookie from '../../utils/setCookie'
+	import {setAuthData} from './auth-store'
 
 	let isLoading = false
 
@@ -21,27 +24,32 @@
 		}),
 		onSubmit: (values) => {
 			isLoading = true
-			fetch('http://localhost:5000/user/login', {
-				body: JSON.stringify(values),
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' }
-			})
-			.then(resp => {
-				if(resp.status != 200) throw new Error(resp.status)
-				return resp.json()
-			})
-			.then(json => {
-				const accessToken = json.data.accessToken
-				setCookie('access-token', accessToken)
-				replace('/dashboard')
-				return json
-			})
-			.catch(error => {
-				console.log(error)
-			})
-			.finally(() => isLoading = false)
+			axios.post(import.meta.env.VITE_BASEURL + '/user/login', values)
+				.then(resp => {
+					const refreshToken = resp.data.data.refreshToken
+					const accessToken = resp.data.data.accessToken
+
+					setAuthData(accessToken)
+					setCookie('refresh-token', refreshToken)
+					replace('/dashboard')
+				})
+				.catch(error => {
+					console.log(error)
+				})
+				.then(() => isLoading = false)
 		}
 	})
+
+	/**
+	 *  TODO: 
+	 * 		- ganti route guard ke refresh token ###
+	 * 		- ganti smua fetch pake request.js
+	 * 		- bikin store buat nympen accessToken ama user role 
+	 * 		- bikin axios interceptor supaya auto refresh accesstoken setiap api call
+	 * 		- bikin side bar nav link visible sesuai role setiap user
+	 * 
+	 * 
+	 * */
 
 </script>
 
@@ -51,7 +59,7 @@
 
 <main class="h-screen w-screen flex justify-center items-center bg-base-200">
 	<Card title="Login">
-		<form on:submit={handleSubmit}>
+		<form on:submit|preventDefault={handleSubmit}>
 			<Input 
 				bind:value={$form.email} 
 				type="email" 

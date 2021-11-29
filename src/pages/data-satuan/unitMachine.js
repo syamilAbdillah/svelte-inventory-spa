@@ -1,5 +1,6 @@
-import { createMachine, assign, interpret } from 'xstate';
+import { createMachine, assign, interpret } from 'xstate'
 import {writable, get} from 'svelte/store' 
+import request from '../../utils/request'
 
 export const unit = writable({})
 
@@ -11,15 +12,12 @@ const mockFetching = () =>
 
 async function getUnits() {
 	try {
-		const resp = await fetch('http://localhost:5000/unit/')
-		if(resp.status != 200) throw new Error(resp.status)
-
-		const units = await resp.json()
-		const etag = resp.headers.get('etag')
-
+		const resp = await request('/unit')
+		const etag = resp?.headers['etag']
+		const units = resp?.data.data
 		return {units, etag}	
 	} catch(error) {
-		console.log(error)
+		// console.log(error)
 		return {error}
 	}
 }
@@ -168,7 +166,8 @@ export const unitMachine = createMachine({
 		}),
 		successGetUnits: assign({
 			units: (ctx, e) => {
-				return e.data.units.data
+				if(e.data.error) return []
+				return e.data.units
 			},
 			etag: (ctx, e) => e.data.etag
 		})
