@@ -64,7 +64,7 @@
 			/>
 		{:else}
 			<SaveButton
-				disabled={$unitService.matches('create')}
+				disabled={!$unitService.matches('idle')}
 			/>	
 		{/if}
 	</form>

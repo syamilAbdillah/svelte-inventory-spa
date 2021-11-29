@@ -114,7 +114,7 @@
 			/>
 		{:else}
 			<SaveButton
-				disabled={$productService.matches('create')}
+				disabled={!$productService.matches('idle')}
 			/>	
 		{/if}
 	</form>
