@@ -13,22 +13,40 @@
 		faClipboardCheck,
 		faUser
 	} from '@fortawesome/free-solid-svg-icons'
+	import { getAuthData } from '../../pages/login/auth-store'
 
 	const dispatch = createEventDispatcher()
-
 	const handleClick = () => dispatch('close')
+
+	const ADMIN = 'admin'
+	const SUPER_ADMIN = 'super admin'
+	const GUDANG = 'gudang'
+
+	const menus = [
+		{ icon: faTachometerAlt, text: 'Dashboard', to: '/dashboard', roles: [SUPER_ADMIN, ADMIN, GUDANG] },
+		{ icon: faTruck, text: 'Data Supplier', to: '/data-supplier', roles: [ADMIN] },
+		{ icon: faFolder, text: 'Data Barang', to: '/data-barang', roles: [ADMIN] },
+		{ icon: faRulerCombined, text: 'Data Satuan', to: '/data-satuan', roles: [ADMIN] },
+		{ icon: faBoxes, text: 'Data Kategori', to: '/data-kategori-barang', roles: [ADMIN] },
+		{ icon: faClipboardCheck, text: 'Laporan', to: '/laporan', roles: [SUPER_ADMIN, ADMIN] },
+		{ icon: faFolderPlus, text: 'Barang Masuk', to: '/barang-masuk', roles: [ADMIN, GUDANG] },
+		{ icon: faFolderMinus, text: 'Barang Keluar', to: '/barang-keluar', roles: [ADMIN, GUDANG] },
+		{ icon: faUser, text: 'Data Pengguna', to: '/data-pengguna', roles: [SUPER_ADMIN] }
+	]
+
+	const isVisible = (roles) => {
+		const {role} = getAuthData()
+		return roles.includes(role)
+	}
 </script>
 
 <ul class="menu p-4 overflow-y-quto w-60 bg-neutral text-gray-300">
 	<a role="button" on:click={handleClick} href="/" class="btn btn-neutral">brand</a>
-	<AsideMenuTitle text="Main Menu"></AsideMenuTitle>
-	<AsideMenuItem on:click={handleClick} icon={faTachometerAlt} text="Dashboard" to="/dashboard"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faTruck} text="Data Supplier" to="/data-supplier"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faFolder} text="Data Barang" to="/data-barang"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faRulerCombined} text="Data Satuan" to="/data-satuan"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faBoxes} text="Data Kategori" to="/data-kategori-barang"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faClipboardCheck} text="Laporan" to="/laporan"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faFolderPlus} text="Barang Masuk" to="/barang-masuk"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faFolderMinus} text="Barang Keluar" to="/barang-keluar"></AsideMenuItem>
-	<AsideMenuItem on:click={handleClick} icon={faUser} text="Data Pengguna" to="/data-pengguna"></AsideMenuItem>
+	<AsideMenuTitle text="Main Menu"/>
+
+	{#each menus as menu, index}
+		{#if isVisible(menu.roles)}
+			<AsideMenuItem on:click={handleClick} icon={menu.icon} text={menu.text} to={menu.to}/>
+		{/if}
+	{/each}
 </ul>

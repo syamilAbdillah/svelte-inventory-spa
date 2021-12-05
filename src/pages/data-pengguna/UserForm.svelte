@@ -1,71 +1,115 @@
 <script>
-	import { createEventDispatcher } from 'svelte'
-	import Card from '../card/Card.svelte'
-	import Input from '../form/Input.svelte'
-	import Select from '../form/Select.svelte'
-	import SaveButton from '../form/SaveButton.svelte'
-	import UpdateButton from '../form/UpdateButton.svelte'
-	import CancelButton from '../form/CancelButton.svelte'
+	import { createForm } from 'svelte-forms-lib'
+	import * as yup from 'yup'
+	import Input from '../../components/form/Input.svelte'
+	import Select from '../../components/form/Select.svelte'
+	import SaveButton from '../../components/form/SaveButton.svelte'
+	import UpdateButton from '../../components/form/UpdateButton.svelte'
+	import CancelButton from '../../components/form/CancelButton.svelte'
+	import Card from '../../components/card/Card.svelte'
+	import userService from './userMachine'
 
-	import { user, state, handleCreate, handleCancle, handleUpdate } from '../../stores/user.js'
+	const initialValues = {
+		name: '',
+		email: '',
+		password: '',
+		role: ''
+	}
 
+	const { form, errors, handleSubmit, handleChange, handleReset, updateInitialValues } = createForm({
+		initialValues: {...initialValues},
+		validationSchema: yup.object().shape({
+			name: yup.string().required(),
+			email: yup.string().email().required(),
+			password: yup.string().required(),
+			role: yup.string().required()
+		}),
+		onSubmit: (values) => {
+			$userService.matches('idle') && userService.send({ type: 'CREATE', payload: values })
+			$userService.matches('edit') && userService.send({ type: 'SAVE_CHANGES', payload: values })
+			handleReset()
+		}
+	})
 
-	const dispatch = createEventDispatcher()
+	userService.onTransition(state => {
+		if(state.value == 'edit'){
+			updateInitialValues({
+				name: state.context.user.name,
+				email: state.context.user.email,
+				password: state.context.user.password,
+				role: state.context.user.role
+			})
+		} else {
+			updateInitialValues({...initialValues})
+		}
+	})
 
-	const options = [
-		{ id: 'admin', 		text: 'admin' 			},
-		{ id: 'super admin', text: 'super admin' 	},
-		{ id: 'gudang', 		text: 'gudang' 		}
-	]
+	const handleCancel = () => {
+		handleReset()
+		userService.send('CANCEL')
+	}
 
-	const dispatchCreate = () => dispatch('create')
-	const dispatchUpdate = () => dispatch('update')
-	const dispatchCancle = () => dispatch('cancle')
+	const roles = ['admin', 'super admin', 'gudang']
 </script>
 
+
 <Card>
-	<Input 
-		bind:value={$user.name} 
-		label="name"
-		placeholder="eg. john doe"
-		required="true" 
-	></Input>
-	<Input 
-		bind:value={$user.email} 
-		label="email"
-		type="email"
-		placeholder="eg. john@doe.com"
-		required="true" 
-	></Input>
+	<form on:submit|preventDefault={handleSubmit}>
+		
+		<Input
+			bind:value={$form.name}
+			on:change={handleChange}
+			error={$errors.name}
+			label="nama"
+			placeholder="john doe"
+			name="name"
+		/>
 
-	{#if !$state.isEdit}
-		<Input 
-			bind:value={$user.password} 
-			label="password"
-			type="password"
-			placeholder="eg. ^&*((%$#j"
-			required="true" 
-		></Input>
-		<Input 
-			bind:value={$user.confirmPassword} 
-			label="confirm password"
-			type="password"
-			placeholder="...."
-			required="true" 
-		></Input>	
-	{/if}
+		<Input
+			bind:value={$form.email}
+			on:change={handleChange} 
+			error={$errors.email}
+			label="email" 
+			placeholder="john@doe.com"
+			name="email"
+			type="email"
+		/>
+		{#if !$userService.matches('edit') && !$userService.matches('update')}
+			<Input
+				bind:value={$form.password}
+				on:change={handleChange}
+				error={$errors.password}
+				label="password"
+				placeholder="********"
+				name="password"
+				type="password"
+			/>	
+		{/if}
+		
+		<Select
+			bind:value={$form.role}
+			on:change={handleChange}
+			error={$errors.role}
+			label="role"
+			name="role"
+		>
+			{#each roles as role, index (role)}
+				<option value="{role}">{role}</option>
+			{/each}
+		</Select>
 
-	<Select
-		bind:value={$user.role}
-		options={options}
-		label="role"
-		required="true" 
-	></Select>
-	
-	{#if $state.isEdit}
-		<CancelButton on:click={handleCancle}></CancelButton>
-		<UpdateButton on:click={() => handleUpdate($user.id)}></UpdateButton>
-	{:else}
-		<SaveButton on:click={() => handleCreate('url')}></SaveButton>	
-	{/if}
+		{#if $userService.matches('edit') || $userService.matches('update')}
+			<CancelButton
+				disabled={$userService.matches('update')}
+				on:click={handleCancel}
+			/>
+			<UpdateButton
+				disabled={$userService.matches('update')}
+			/>
+		{:else}
+			<SaveButton
+				disabled={!$userService.matches('idle')}
+			/>	
+		{/if}
+	</form>
 </Card>

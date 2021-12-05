@@ -1,7 +1,17 @@
 <script>
 	import Icon from 'svelte-awesome'
-	import { link } from 'svelte-spa-router'
+	import { link, replace } from 'svelte-spa-router'
 	import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+	import request from '../../utils/request'
+	import setCookie from '../../utils/setCookie'
+	import { resetAuthData } from '../../pages/login/auth-store'
+
+	async function handleLogout(e){
+		const _ = await request.delete('/user/logout')
+		setCookie('refresh-token', '')
+		resetAuthData()
+		replace('/login')
+	}
 </script>
 
 <div class="dropdown dropdown-end dropdown-hover text-gray-600">
@@ -21,7 +31,7 @@
 			</a>
 		</li>
 		<li>
-			<a href="/login" use:link>
+			<a on:click={handleLogout}>
 				<Icon data={faSignOutAlt} class="mr-4"></Icon>
 				logout
 			</a>

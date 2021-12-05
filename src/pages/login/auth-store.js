@@ -13,3 +13,7 @@ export function setAuthData(accessToken){
 
 	return authData
 }
+
+export function resetAuthData(){
+	authStore.set({})
+}
