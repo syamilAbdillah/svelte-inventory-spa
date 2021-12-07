@@ -13,7 +13,7 @@
 		faClipboardCheck,
 		faUser
 	} from '@fortawesome/free-solid-svg-icons'
-	import { getAuthData } from '../../pages/login/auth-store'
+	import { authStore } from '../../pages/login/auth-store'
 
 	const dispatch = createEventDispatcher()
 	const handleClick = () => dispatch('close')
@@ -33,19 +33,14 @@
 		{ icon: faFolderMinus, text: 'Barang Keluar', to: '/barang-keluar', roles: [ADMIN, GUDANG] },
 		{ icon: faUser, text: 'Data Pengguna', to: '/data-pengguna', roles: [SUPER_ADMIN] }
 	]
-
-	const isVisible = (roles) => {
-		const {role} = getAuthData()
-		return roles.includes(role)
-	}
 </script>
 
 <ul class="menu p-4 overflow-y-quto w-60 bg-neutral text-gray-300">
-	<a role="button" on:click={handleClick} href="/" class="btn btn-neutral">brand</a>
+	<!-- <a role="button" on:click={handleClick} href="/" class="btn btn-neutral">brand</a> -->
 	<AsideMenuTitle text="Main Menu"/>
 
 	{#each menus as menu, index}
-		{#if isVisible(menu.roles)}
+		{#if menu.roles.includes($authStore.role)}
 			<AsideMenuItem on:click={handleClick} icon={menu.icon} text={menu.text} to={menu.to}/>
 		{/if}
 	{/each}

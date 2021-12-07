@@ -1,10 +1,12 @@
 <script>
 	import Icon from 'svelte-awesome'
 	import { link, replace } from 'svelte-spa-router'
-	import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+	import jwt_decode from 'jwt-decode'
+	import { faUser, faSignOutAlt, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 	import request from '../../utils/request'
 	import setCookie from '../../utils/setCookie'
-	import { resetAuthData } from '../../pages/login/auth-store'
+	import getCookie from '../../utils/getCookie'
+	import { resetAuthData, authStore } from '../../pages/login/auth-store'
 
 	async function handleLogout(e){
 		const _ = await request.delete('/user/logout')
@@ -12,6 +14,8 @@
 		resetAuthData()
 		replace('/login')
 	}
+
+	console.log($authStore.name)
 </script>
 
 <div class="dropdown dropdown-end dropdown-hover text-gray-600">
@@ -21,7 +25,10 @@
 				<img src="http://daisyui.com/tailwind-css-component-profile-1@40w.png" alt="User profile">
 			</div>
 		</div>
-		username
+		<span class="mr-2">
+			{ $authStore.name || ""}
+		</span>
+		<Icon data={faAngleDown}/>
 	</a>
 	<ul class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-40 compact">
 		<li>

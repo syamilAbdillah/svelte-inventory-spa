@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store'
 import jwt_decode from 'jwt-decode'
 
-const authStore = writable({})
+export const authStore = writable({})
 
 export function getAuthData(){
 	return get(authStore)
