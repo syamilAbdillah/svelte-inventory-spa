@@ -72,12 +72,17 @@ export const stockIncMachine = createMachine({
 				id: 'get-stock-incs',
 				src: (ctx, e) => getStockIncs,
 				onDone: {
-					target: 'idle',
+					target: 'loadOptions',
 					actions: 'successGetStockIncs'
 				},
 				onError: {
 					target: 'load'
 				}
+			}
+		},
+		loadOptions: {
+			after: {
+				1000: 'idle'
 			}
 		},
 		edit: {
