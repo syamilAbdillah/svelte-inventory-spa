@@ -1,13 +1,12 @@
 <script>
 	import { onMount } from 'svelte'
-	import { useMachine } from '@xstate/svelte'
 	import Table from '../../components/table/Table.svelte'
 	import Thead from '../../components/table/Thead.svelte'
 	import Tbody from '../../components/table/Tbody.svelte'
 	import DeleteButton from '../../components/table/DeleteButton.svelte'
 	import EditButton from '../../components/table/EditButton.svelte'
 	import SkeletonRow from '../../components/table/SkeletonRow.svelte'
-	import unitService from './unitMachine'
+	import unitService from '../../machines/unit-machine'
 
 	onMount(() => unitService.send('FETCHING'))
 

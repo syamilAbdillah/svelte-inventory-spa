@@ -6,7 +6,7 @@
 	import DeleteButton from '../../components/table/DeleteButton.svelte'
 	import EditButton from '../../components/table/EditButton.svelte'
 	import SkeletonRow from '../../components/table/SkeletonRow.svelte'
-	import userService from './userMachine'
+	import userService from '../../machines/user-machine'
 
 	onMount(() => userService.send('FETCHING'))
 

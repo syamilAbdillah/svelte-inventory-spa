@@ -7,7 +7,7 @@
 	import UpdateButton from '../../components/form/UpdateButton.svelte'
 	import CancelButton from '../../components/form/CancelButton.svelte'
 	import Card from '../../components/card/Card.svelte'
-	import userService from './userMachine'
+	import userService from '../../machines/user-machine'
 
 	const initialValues = {
 		name: '',

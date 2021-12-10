@@ -7,7 +7,7 @@
 	import DeleteButton from '../../components/table/DeleteButton.svelte'
 	import EditButton from '../../components/table/EditButton.svelte'
 	import SkeletonRow from '../../components/table/SkeletonRow.svelte'
-	import categoryService from './categoryMachine'
+	import categoryService from '../../machines/category-machine'
 
 	onMount(() => categoryService.send('FETCHING'))
 

@@ -6,7 +6,7 @@
 	import UpdateButton from '../../components/form/UpdateButton.svelte'
 	import CancelButton from '../../components/form/CancelButton.svelte'
 	import Card from '../../components/card/Card.svelte'
-	import categoryService from './categoryMachine'
+	import categoryService from '../../machines/category-machine'
 
 
 	const { form, errors, handleSubmit, handleChange, handleReset, updateInitialValues } = createForm({
