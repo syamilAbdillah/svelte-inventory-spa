@@ -7,10 +7,10 @@
 	import UpdateButton from '../../components/form/UpdateButton.svelte'
 	import CancelButton from '../../components/form/CancelButton.svelte'
 	import Card from '../../components/card/Card.svelte'
-	import categoryService from '../data-kategori-barang/categoryMachine'
-	import supplierService from '../data-supplier/supplierMachine'
-	import unitService from '../data-satuan/unitMachine'
-	import productService from './productMachine'
+	import supplierService from '../../machines/supplier-machine'
+	import unitService from '../../machines/unit-machine'
+	import categoryService from '../../machines/category-machine'
+	import productService from '../../machines/product-machine'
 
 	const initialValues = {
 		name: '',
@@ -78,6 +78,7 @@
 			label="satuan barang"
 			name="unitId"
 		>
+			<option value="" disabled selected>~Pilih Satuan~</option>
 			{#each $unitService.context.units as unit, index (unit.id)}
 				<option value="{unit.id}">{ unit.name }</option>
 			{/each}
@@ -89,6 +90,7 @@
 			label="kategori barang"
 			name="categoryId"
 		>
+			<option value="" disabled selected>~Pilih Kategori Barang~</option>
 			{#each $categoryService.context.categories as cateogry, index (cateogry.id)}
 				<option value="{cateogry.id}">{ cateogry.name }</option>
 			{/each}
@@ -100,6 +102,7 @@
 			label="supplier"
 			name="supplierId"
 		>
+			<option value="" disabled selected>~Pilih Supplier~</option>
 			{#each $supplierService.context.suppliers as supplier, index (supplier.id)}
 				<option value="{supplier.id}">{ supplier.code } - { supplier.name }</option>
 			{/each}

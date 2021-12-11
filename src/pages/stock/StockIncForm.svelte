@@ -7,8 +7,8 @@
 	import UpdateButton from '../../components/form/UpdateButton.svelte'
 	import CancelButton from '../../components/form/CancelButton.svelte'
 	import Card from '../../components/card/Card.svelte'
-	import productService from '../data-barang/productMachine'
-	import stockIncService from './stockIncMachine'
+	import productService from '../../machines/product-machine'
+	import stockIncService from '../../machines/stock-inc-machine'
 
 	const initialValues = {
 		productId: '',
@@ -24,7 +24,7 @@
 		validationSchema: yup.object().shape({
 			productId: yup.string().required('anda harus memilih barang'),
 			date: yup.string().required('anda harus memilih tanggal'),
-			qty: yup.number().moreThan(1, 'kuantitas harus lebih dari 0').required(),
+			qty: yup.number().moreThan(0, 'kuantitas harus lebih dari 0').required(),
 			desc: yup.string().required('anda harus menuliskan deskripsi')
 		}),
 		onSubmit: (values) => {

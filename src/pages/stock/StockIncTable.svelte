@@ -6,7 +6,7 @@
 	import DeleteButton from '../../components/table/DeleteButton.svelte'
 	import EditButton from '../../components/table/EditButton.svelte'
 	import SkeletonRow from '../../components/table/SkeletonRow.svelte'
-	import stockIncService from './stockIncMachine'
+	import stockIncService from '../../machines/stock-inc-machine'
 	import formatDate from '../../utils/formatDate'
 
 	onMount(() => stockIncService.send('FETCHING'))

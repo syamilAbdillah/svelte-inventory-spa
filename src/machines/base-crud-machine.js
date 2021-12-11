@@ -2,11 +2,11 @@ import { createMachine, assign } from 'xstate'
 import request from '../utils/request'
 
 
-function baseMachineFactory(entity, entities) {
+function baseMachineFactory(entity, entities, opt = {}) {
 	
 	async function getEntities() {
 		try {
-			const resp = await request.get(`/${entity}`)
+			const resp = await request.get(`/${opt.url ? opt.url: entity}`)
 			
 			const result = {}
 
@@ -23,7 +23,7 @@ function baseMachineFactory(entity, entities) {
 
 	async function createEntity(entityObj){
 		try {
-			const resp = await request.post(`/${entity}`, entityObj)
+			const resp = await request.post(`/${opt.url ? opt.url: entity}`, entityObj)
 			return resp.data
 		} catch(error) {
 			console.log(error)
@@ -33,7 +33,7 @@ function baseMachineFactory(entity, entities) {
 
 	async function deleteEntity(id){
 		try {
-			const resp = await request.delete(`/${entity}/${id}`)
+			const resp = await request.delete(`/${opt.url ? opt.url: entity}/${id}`)
 			return resp.data
 		} catch(error) {
 			console.log(error)
@@ -43,7 +43,7 @@ function baseMachineFactory(entity, entities) {
 
 	async function updateEntity(entityObj){
 		try {
-			const resp = await request.put(`/${entity}/${entityObj.id}`,entityObj)
+			const resp = await request.put(`/${opt.url ? opt.url: entity}/${entityObj.id}`,entityObj)
 			return resp.data
 		} catch(error) {
 			console.log(error)
@@ -66,8 +66,7 @@ function baseMachineFactory(entity, entities) {
 	successGetEntitiesObject[entities] = (ctx, e) => e.data[entities].data
 	successGetEntitiesObject['etag'] = (ctx, e) => e.data.etag
 
-
-	return createMachine({
+	const config = {
 		id: `${entity}-machine`,
 		initial: 'idle',
 		context: {...context},
@@ -138,14 +137,38 @@ function baseMachineFactory(entity, entities) {
 				}
 			}
 		}
-	}, 
-	{
+	} 
+
+	const actions = {
 		actions: {
 			editEntity: assign({...editEntityObject}),
 			resetEntity: assign({...resetEntityObject}),
 			successGetEntities: assign({...successGetEntitiesObject})
 		}
-	})
+	}
+
+	if(opt.withOption == true) {
+		config.states.loadOptions = {
+			after: {
+				1000: 'idle'
+			}
+		}
+
+		config.states.load = {
+			...config.states.load, 
+			invoke: {
+				...config.states.load.invoke, 
+				onDone: {
+					...config.states.load.invoke.onDone,
+					target: 'loadOptions'
+				}
+			}
+		}
+	}
+
+	console.log(config)
+
+	return createMachine(config, actions)
 }
 
 export default baseMachineFactory
