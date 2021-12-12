@@ -8,7 +8,7 @@
 	import CancelButton from '../../components/form/CancelButton.svelte'
 	import Card from '../../components/card/Card.svelte'
 	import productService from '../../machines/product-machine'
-	import stockIncService from '../../machines/stock-inc-machine'
+	import stockDecService from '../../machines/stock-dec-machine'
 	import formatDate from '../../utils/formatDate'
 
 	const initialValues = {
@@ -29,19 +29,19 @@
 			desc: yup.string().required('anda harus menuliskan deskripsi')
 		}),
 		onSubmit: (values) => {
-			$stockIncService.matches('idle') && stockIncService.send({ type: 'CREATE', payload: values })
-			$stockIncService.matches('edit') && stockIncService.send({ type: 'SAVE_CHANGES', payload: values })
+			$stockDecService.matches('idle') && stockDecService.send({ type: 'CREATE', payload: values })
+			$stockDecService.matches('edit') && stockDecService.send({ type: 'SAVE_CHANGES', payload: values })
 			handleReset()
 		}
 	})
 
-	stockIncService.onTransition(state => {
+	stockDecService.onTransition(state => {
 		if(state.value == 'edit'){
 			updateInitialValues({
-				productId: state.context.stockInc.product.id,
-				date: formatDate(state.context.stockInc.date),
-				qty: state.context.stockInc.qty,
-				desc: state.context.stockInc.desc
+				productId: state.context.stockDec.product.id,
+				date: formatDate(state.context.stockDec.date),
+				qty: state.context.stockDec.qty,
+				desc: state.context.stockDec.desc
 			})
 		} else {
 			updateInitialValues({...initialValues})
@@ -54,7 +54,7 @@
 
 	const handleCancel = () => {
 		handleReset()
-		stockIncService.send('CANCEL')
+		stockDecService.send('CANCEL')
 	}
 </script>
 
@@ -95,17 +95,17 @@
 			label="Keterangan"
 			name="desc"
 		/>
-		{#if $stockIncService.matches('edit') || $stockIncService.matches('update')}
+		{#if $stockDecService.matches('edit') || $stockDecService.matches('update')}
 			<CancelButton
-				disabled={$stockIncService.matches('update')}
+				disabled={$stockDecService.matches('update')}
 				on:click={handleCancel}
 			/>
 			<UpdateButton
-				disabled={$stockIncService.matches('update')}
+				disabled={$stockDecService.matches('update')}
 			/>
 		{:else}
 			<SaveButton
-				disabled={!$stockIncService.matches('idle')}
+				disabled={!$stockDecService.matches('idle')}
 			/>	
 		{/if}
 	</form>
