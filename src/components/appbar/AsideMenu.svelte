@@ -1,7 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte'
-	import AsideMenuItem from './AsideMenuItem.svelte'
-	import AsideMenuTitle from './AsideMenuTitle.svelte'
+	import Icon from 'svelte-awesome'
 	import { 
 		faTachometerAlt, 
 		faTruck, 
@@ -11,8 +10,11 @@
 		faFolderMinus, 
 		faFolderPlus,
 		faClipboardCheck,
-		faUser
+		faUser,
+		faWarehouse
 	} from '@fortawesome/free-solid-svg-icons'
+	import AsideMenuItem from './AsideMenuItem.svelte'
+	import AsideMenuTitle from './AsideMenuTitle.svelte'
 	import { authStore } from '../../pages/login/auth-store'
 
 	const dispatch = createEventDispatcher()
@@ -36,8 +38,13 @@
 </script>
 
 <ul class="menu p-4 overflow-y-quto w-60 bg-neutral text-gray-300">
-	<!-- <a role="button" on:click={handleClick} href="/" class="btn btn-neutral">brand</a> -->
-	<AsideMenuTitle text="Main Menu"/>
+	<a role="button" on:click={handleClick} href="/" class="btn btn-neutral">
+		<Icon data={faWarehouse} class="mr-2"/>
+		<span>
+			sistem persediaan
+		</span>
+	</a>
+	<hr class="mb-2 text-gray-300">
 
 	{#each menus as menu, index}
 		{#if menu.roles.includes($authStore.role)}

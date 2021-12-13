@@ -1,5 +1,6 @@
 <script>
 	export let fields = []
+	export let action = true
 </script>
 
 <thead>
@@ -8,6 +9,8 @@
 		{#each fields as field, index}
 			<th>{ field }</th>
 		{/each}
-		<th>action</th>
+		{#if action}
+			<th>action</th>
+		{/if}
 	</tr>
 </thead>
